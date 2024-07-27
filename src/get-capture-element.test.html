@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tests</title>
+  </head>
+  <body>
+    <div ie="wrapper">
+      <div ie="capture" ie-scale="1,2,3"></div>
+      <div ie="capture"></div>
+      <div ie="capture"></div>
+      <div ie="capture"></div>
+    </div>
+    <script src="../../dist/image-exporter.umd.js"></script>
+    <script>
+      let imageExporter = new ImageExporter({ downloadImages: false, debug: true });
+      imageExporter.captureAll();
+    </script>
+  </body>
+</html>

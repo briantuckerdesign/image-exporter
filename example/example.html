@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>image-exporter Example</title>
+    <link rel="stylesheet" href="example.css" />
+  </head>
+
+  <body>
+    <div class="gf_loader">
+      <div class="gf_loader-message">Loading...</div>
+    </div>
+    <div class="wrapper">
+      <div>
+        <form action="" autocomplete="off" class="input-wrapper">
+          <!--You can set settings via user input like this-->
+          <label for="format" class="input-label">File Format</label>
+          <select title="format" gf-format-input class="example-input">
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+          </select>
+
+          <label for="scale" class="input-label">Scale</label>
+          <select title="scale" gf-scale-input class="example-input">
+            <option value="1">@1x</option>
+            <option value="2">@2x</option>
+            <option value="3">@3x</option>
+            <option value="4">@4x</option>
+          </select>
+
+          <label for="zipname" class="input-label">Zip Name</label>
+          <input
+            title="zipname"
+            type="text"
+            value="images"
+            gf-zip-label-input
+            class="example-input"
+          />
+
+          <label for="zip-label-date" class="input-label">Zip Label Date</label>
+          <select title="zip-label-date" gf-zip-label-date-input class="example-input">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+          </select>
+
+          <label for="zip-label-scale" class="input-label">Zip Label Scale</label>
+          <select title="zip-label-scale" gf-zip-label-scale-input class="example-input">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+          </select>
+
+          <div gf="trigger" class="example-button">Generate</div>
+        </form>
+      </div>
+      <div class="example-wrapper" gf="wrapper" gf-zip-label="test">
+        <div class="example-1" gf="capture" gf-scale="1,4">
+          <div class="example-text-1" gf="slug">Example image 1</div>
+        </div>
+        <div class="example-2" gf="capture">
+          <div class="example-text-2" gf="slug">Example image 2</div>
+        </div>
+      </div>
+    </div>
+    <script src="../dist/image-exporter.umd.js" type="text/javascript"></script>
+    <script>
+      let options = {
+        corsProxyBaseUrl: "http://localhost:8010/",
+        selectors: {
+          wrapper: "[gf='wrapper']",
+          capture: "[gf='capture']",
+          trigger: "[gf='trigger']",
+          slug: "[gf='slug']",
+          ignore: "[gf='ignore']",
+        },
+        image: {
+          scale: {
+            value: 1,
+            attributeSelector: "gf-scale",
+            inputSelector: "gf-scale-input",
+          },
+          quality: {
+            value: 1,
+            attributeSelector: "gf-quality",
+            inputSelector: "gf-quality-input",
+          },
+          format: {
+            value: "jpg",
+            attributeSelector: "gf-format",
+            inputSelector: "gf-format-input",
+          },
+          dateInLabel: {
+            value: true,
+            attributeSelector: "gf-img-label-date",
+            inputSelector: "gf-img-label-date-input",
+          },
+          scaleInLabel: {
+            value: true,
+            attributeSelector: "gf-img-label-scale",
+            inputSelector: "gf-img-label-scale-input",
+          },
+        },
+        zip: {
+          label: {
+            value: "images",
+            attributeSelector: "gf-zip-label",
+            inputSelector: "gf-zip-label-input",
+          },
+          dateInLabel: {
+            value: true,
+            attributeSelector: "gf-zip-label-date",
+            inputSelector: "gf-zip-label-date-input",
+          },
+          scaleInLabel: {
+            value: true,
+            attributeSelector: "gf-zip-label-scale",
+            inputSelector: "gf-zip-label-scale-input",
+          },
+        },
+      };
+
+      let imageExporter = new ImageExporter({ options });
+      imageExporter.addTrigger(document.querySelector("[gf=trigger]"));
+      // imageExporter.addTrigger(
+      //   document.querySelector("[gf=test-trigger]"),
+      //   document.querySelector("[test=test]")
+      // );
+    </script>
+    <script>
+      let optionsx = {
+        inputPrefix: "gf",
+        attributes: {
+          slugSelector: "[gf='slug']",
+          wrapperSelector: '[gf="wrapper"]',
+          captureSelector: '[gf="capture"]',
+          triggerSelector: '[gf="trigger"]',
+          slugSelector: '[gf="slug"]',
+          ignoreSelector: '[gf="ignore"]',
+          scale: "gf-scale",
+          quality: "gf-quality",
+          format: "gf-format",
+          zipLabel: "gf-zip-label",
+          zipLabelDate: "gf-zip-label-date",
+          zipLabelScale: "gf-zip-label-scale",
+          imgLabelDate: "gf-img-label-date",
+          imgLabelScale: "gf-img-label-scale",
+          corsProxyBaseUrl: "gf-cors-proxy-base-url",
+        },
+      };
+    </script>
+  </body>
+</html>

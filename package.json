@@ -1,0 +1,50 @@
+{
+  "name": "image-exporter",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "type": "module",
+  "directories": {
+    "dist": "dist",
+    "src": "src",
+    "example": "example"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/image-exporter.es.js",
+      "require": "./dist/image-exporter.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "watch": "NODE_ENV=development vite build --watch",
+    "build": "NODE_ENV=production vite build",
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briantuckerdesign/image-exporter.git"
+  },
+  "keywords": [
+    "image exporter"
+  ],
+  "author": "Brian Tucker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/briantuckerdesign/image-exporter/issues"
+  },
+  "homepage": "https://github.com/briantuckerdesign/image-exporter#readme",
+  "dependencies": {
+    "downloadjs": "^1.4.7",
+    "html-to-image": "^1.11.11",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-strip": "^3.0.4",
+    "@types/jest": "^29.5.12",
+    "@vitest/ui": "^2.0.4",
+    "puppeteer": "^22.14.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.2.4",
+    "vitest": "^2.0.4"
+  }
+}

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tests</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+    />
+    <script src="/dist/image-exporter.umd.js"></script>
+
+    <style>
+      slug {
+        display: none;
+      }
+      artboard {
+        border: 1px solid #2d3138;
+      }
+      section {
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 1rem 0;
+      }
+      .artboard-1 {
+        padding: 1rem;
+        background-color: #f0f0f0;
+        color: #333;
+        width: 300px;
+        height: 300px;
+        font-weight: 800;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(45deg, #01aaff, #0172ad);
+        color: white;
+        margin: 0rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Input Tests</h1>
+      <hr />
+
+      <h2>Inputs</h2>
+      <div>
+        <!-- Scale -->
+        <label for="scale"><strong>Scale</strong></label>
+        <select title="scale" ie-scale-input>
+          <option value="1">@1x</option>
+          <option value="2">@2x</option>
+          <option value="3">@3x</option>
+          <option value="4">@4x</option>
+        </select>
+      </div>
+      <div>
+        <!-- Quality -->
+        <label for="quality"><strong>Quality</strong></label>
+        <input
+          type="range"
+          id="quality"
+          name="quality"
+          min="0.00"
+          max="1.00"
+          value="1"
+          step="0.01"
+          ie-quality-input
+        />
+      </div>
+      <div>
+        <!-- Format -->
+        <label for="format"><strong>Format</strong></label>
+        <select title="format" ie-format-input>
+          <option value="png">PNG</option>
+          <option value="jpg">JPG</option>
+        </select>
+      </div>
+      <div>
+        <fieldset>
+          <legend><strong>Image label</strong></legend>
+          <!-- dateInLabel -->
+          <label for="dateInLabel">
+            <input
+              type="checkbox"
+              id="dateInLabel"
+              name="dateInLabel"
+              name="dateInLabel"
+              role="switch"
+              checked=""
+              ie-img-label-date-input
+            />
+            Date in label
+          </label>
+          <!--scaleInLabel-->
+          <label for="scaleInLabel">
+            <input
+              type="checkbox"
+              id="scaleInLabel"
+              name="scaleInLabel"
+              name="scaleInLabel"
+              role="switch"
+              checked=""
+              ie-img-label-scale-input
+            />
+            Scale in label
+          </label>
+        </fieldset>
+      </div>
+      <fieldset>
+        <legend><strong>Zip label</strong></legend>
+        <!-- zipLabel -->
+        <label for="zipLabel">Label</label>
+        <input type="text" id="zipLabel" name="zipLabel" ie-zip-label-input />
+        <!-- zipDateInLabel -->
+        <label for="zipDateInLabel">
+          <input
+            type="checkbox"
+            id="zipDateInLabel"
+            name="zipDateInLabel"
+            name="zipDateInLabel"
+            role="switch"
+            checked=""
+            ie-zip-label-date-input
+          />
+          Date in label
+        </label>
+        <!--zipScaleInLabel-->
+        <label for="zipScaleInLabel">
+          <input
+            type="checkbox"
+            id="zipScaleInLabel"
+            name="zipScaleInLabel"
+            name="zipScaleInLabel"
+            role="switch"
+            checked=""
+            ie-zip-label-scale-input
+          />
+          Scale in label
+        </label>
+      </fieldset>
+
+      <button ie-trigger>Run</button>
+    </header>
+    <hr />
+    <main ie="wrapper">
+      <section>
+        <h2>Artboards</h2>
+        <artboard ie="capture" class="artboard-1">
+          <slug ie="slug">ping</slug>
+          <div>This is the headline</div>
+        </artboard>
+        <artboard ie="capture" class="artboard-1">
+          <slug ie="slug">pong</slug>
+          <div>This is the headline</div>
+        </artboard>
+      </section>
+    </main>
+    <script>
+      const testOptions = {
+        corsProxyBaseUrl: "http://localhost:8010/",
+      };
+
+      let imageExporter = new ImageExporter({ testOptions });
+      imageExporter.addTrigger("[ie-trigger]");
+    </script>
+  </body>
+</html>

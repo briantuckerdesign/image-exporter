@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tests</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+    />
+    <script src="/dist/image-exporter.umd.js"></script>
+
+    <style>
+      slug {
+        display: none;
+      }
+      artboard {
+        border: 1px solid #2d3138;
+      }
+      section {
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 1rem 0;
+      }
+      .test-1 {
+        padding: 1rem;
+        background-color: #f0f0f0;
+        color: #333;
+        width: 300px;
+        height: 300px;
+        font-weight: 800;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(45deg, #01aaff, #0172ad);
+        color: white;
+        margin: 0rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Tests</h1>
+      <p>Exports a series of artboards simulating common scenarios.</p>
+      <p>Check each export on build.</p>
+      <button gf="trigger">Run</button>
+      <label for="format" class="input-label">File Format</label>
+      <select title="format" ie-format-input class="example-input">
+        <option value="png">PNG</option>
+        <option value="jpg">JPG</option>
+      </select>
+
+      <label for="scale" class="input-label">Scale</label>
+      <select title="scale" ie-scale-input class="example-input">
+        <option value="1">@1x</option>
+        <option value="2">@2x</option>
+        <option value="3">@3x</option>
+        <option value="4">@4x</option>
+      </select>
+    </header>
+    <main ie="wrapper" ie-scale="4">
+      <section>
+        <h2 gf="test-trigger">Test 1</h2>
+        <artboard ie="capture" class="test-1">
+          <slug ie="slug">ping</slug>
+          <div>This is the headline</div>
+        </artboard>
+        <artboard ie="capture" class="test-1" ie-scale="1,2,3,4" test="test">
+          <slug ie="slug">pong</slug>
+          <div>This is the headline</div>
+        </artboard>
+      </section>
+    </main>
+    <script>
+      let options = {
+        corsProxyBaseUrl: "http://localhost:8010/",
+      };
+
+      let imageExporter = new ImageExporter({ options });
+      imageExporter.addTrigger(document.querySelector("[gf=trigger]"));
+      imageExporter.addTrigger(
+        document.querySelector("[gf=test-trigger]"),
+        document.querySelector("[test=test]")
+      );
+    </script>
+  </body>
+</html>
