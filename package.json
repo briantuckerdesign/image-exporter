@@ -1,0 +1,53 @@
+{
+  "name": "image-exporter",
+  "version": "1.0.0",
+  "description": "Easily download one or more DOM elements as images",
+  "main": "src/index.ts",
+  "type": "module",
+  "directories": {
+    "dist": "dist",
+    "src": "src"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/image-exporter.es.js",
+      "require": "./dist/image-exporter.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "watch": "NODE_ENV=development && vite build --watch",
+    "build": "NODE_ENV=production vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briantuckerdesign/image-exporter.git"
+  },
+  "keywords": [
+    "image exporter",
+    "image downloader",
+    "html-to-image",
+    "webflow",
+    "attributes",
+    "div to image",
+    "gennyflow"
+  ],
+  "author": "Brian Tucker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/briantuckerdesign/image-exporter/issues"
+  },
+  "homepage": "https://github.com/briantuckerdesign/image-exporter#readme",
+  "dependencies": {
+    "@types/downloadjs": "^1.4.6",
+    "downloadjs": "^1.4.7",
+    "html-to-image": "^1.11.13",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "http-server": "^14.1.1",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.14"
+  }
+}
