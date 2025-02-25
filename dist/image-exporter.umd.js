@@ -819,6 +819,14 @@
         // Ignores elements with data-ignore-capture attribute
         filter
       };
+      const styles = getComputedStyle(element);
+      const backgroundColor = styles.backgroundColor;
+      const backgroundImage = styles.backgroundImage;
+      let cleanUpBackground = false;
+      if (backgroundColor === "rgba(0, 0, 0, 0)" && backgroundImage === "none" && imageOptions.format === "jpg") {
+        element.style.backgroundColor = "#FFFFFF";
+        cleanUpBackground = true;
+      }
       switch (imageOptions.format) {
         case "jpg":
           dataURL = await toJpeg(element, htmlToImageOptions);
@@ -829,6 +837,10 @@
         case "svg":
           dataURL = await toSvg(element, htmlToImageOptions);
           break;
+      }
+      if (cleanUpBackground) {
+        element.style.backgroundColor = "";
+        element.style.backgroundImage = "";
       }
       return {
         dataURL,
@@ -3637,7 +3649,7 @@
   }
   let windowLogging = true;
   let loggingLevel = "none";
-  async function capture(elements, userConfig) {
+  async function capture(elements, userConfig = defaultConfig) {
     try {
       const config = { ...defaultConfig, ...userConfig };
       windowLogging = config.enableWindowLogging;

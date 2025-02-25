@@ -2,6 +2,7 @@ import * as htmlToImage from "html-to-image";
 import { Image, ParsedImageOptions } from "../types";
 import { handleFileNames } from "./handle-filenames";
 import { Options } from "html-to-image/lib/types";
+import { get } from "http";
 
 /**
  * captureElement
@@ -25,7 +26,21 @@ export async function captureElement(
       filter: filter,
     };
 
-    // Captures image b ased on format
+    // If element has no background and is a JPG, default to white background
+    const styles = getComputedStyle(element);
+    const backgroundColor = styles.backgroundColor;
+    const backgroundImage = styles.backgroundImage;
+    let cleanUpBackground = false;
+    if (
+      backgroundColor === "rgba(0, 0, 0, 0)" &&
+      backgroundImage === "none" &&
+      imageOptions.format === "jpg"
+    ) {
+      element.style.backgroundColor = "#FFFFFF";
+      cleanUpBackground = true;
+    }
+
+    // Captures image based on format
     switch (imageOptions.format) {
       case "jpg":
         dataURL = await htmlToImage.toJpeg(element, htmlToImageOptions);
@@ -36,6 +51,11 @@ export async function captureElement(
       case "svg":
         dataURL = await htmlToImage.toSvg(element, htmlToImageOptions);
         break;
+    }
+
+    if (cleanUpBackground) {
+      element.style.backgroundColor = "";
+      element.style.backgroundImage = "";
     }
 
     return {

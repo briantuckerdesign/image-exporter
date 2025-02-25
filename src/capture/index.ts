@@ -18,7 +18,7 @@ export let loggingLevel = "none";
  */
 export async function capture(
   elements: HTMLElement[] | NodeListOf<HTMLElement> | HTMLElement,
-  userConfig: Partial<Config>
+  userConfig: Partial<Config> = defaultConfig
 ): Promise<Image[] | null> {
   try {
     /* --------------------------------- Config --------------------------------- */
