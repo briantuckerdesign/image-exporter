@@ -50,7 +50,7 @@ import  { capture }  from  "image-exporter";
 	/** Default label for images. Does not include file extension or scale. */
 	defaultImageLabel:  string;
 	/** Label for zip file. Does not include file extension or scale. */
-	zipLabel:  Label;
+	zipLabel:  string;
 	/** Base URL for CORS proxy used when fetching external images. */
 	corsProxyBaseUrl:  string;
 	/** Enable window logging for use by external scripts */
