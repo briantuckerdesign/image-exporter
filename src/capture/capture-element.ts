@@ -2,8 +2,6 @@ import * as htmlToImage from "html-to-image";
 import { Image, ParsedImageOptions } from "../types";
 import { handleFileNames } from "./handle-filenames";
 import { Options } from "html-to-image/lib/types";
-import { get } from "http";
-
 /**
  * captureElement
  *
