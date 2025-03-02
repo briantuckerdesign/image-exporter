@@ -29,17 +29,6 @@ export async function proxyCSS(config: Config) {
       const response = await fetch(proxiedURL);
       let cssContent = await response.text();
 
-      // Proxy absolute URLs (http/https) within the CSS content
-      cssContent = cssContent.replace(
-        /url\(['"]?(https?:\/\/[^'")\s]+)['"]?\)/g,
-        (match, url) => {
-          // Skip if already proxied
-          if (url.startsWith(config.corsProxyBaseUrl)) return match;
-          // Otherwise return proxied URL
-          return `url("${config.corsProxyBaseUrl}${encodeURIComponent(url)}")`;
-        }
-      );
-
       // Insert the parsed CSS content into a <style> element
       const styleElement = document.createElement("style");
       styleElement.textContent = cssContent;
