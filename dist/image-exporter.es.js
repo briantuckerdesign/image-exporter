@@ -3338,7 +3338,11 @@ const log = {
   info: (...messages) => logAction(messages, "info"),
   error: (...messages) => logAction(messages, "error"),
   verbose: (...messages) => logAction(messages, "verbose"),
-  progress: (progress, total) => logProgress(progress, total)
+  progress: (progress, total) => logProgress(progress, total),
+  group: {
+    open: (...messages) => logAction(messages, "group"),
+    close: (...messages) => logAction(messages, "groupEnd")
+  }
 };
 async function logAction(messages, type = "info") {
   const combinedMessage = messages.map((msg) => typeof msg === "object" ? JSON.stringify(msg) : msg).join(" ");
@@ -3357,6 +3361,12 @@ async function logAction(messages, type = "info") {
       if (loggingLevel === "verbose") {
         console.log(...messages);
       }
+      break;
+    case "group":
+      console.group(...messages);
+      break;
+    case "groupEnd":
+      console.groupEnd();
       break;
   }
   if (windowLogging) window.imageExporterLogs.push({ message: combinedMessage, type });
@@ -3396,13 +3406,6 @@ async function proxyCSS(config) {
     try {
       const response = await fetch(proxiedURL);
       let cssContent = await response.text();
-      cssContent = cssContent.replace(
-        /url\(['"]?(https?:\/\/[^'")\s]+)['"]?\)/g,
-        (match, url) => {
-          if (url.startsWith(config.corsProxyBaseUrl)) return match;
-          return `url("${config.corsProxyBaseUrl}${encodeURIComponent(url)}")`;
-        }
-      );
       const styleElement = document.createElement("style");
       styleElement.textContent = cssContent;
       styleElement.setAttribute(
@@ -3645,6 +3648,7 @@ async function determineTotalElements(elements) {
 let windowLogging = true;
 let loggingLevel = "none";
 async function capture(elements, userConfig = defaultConfig) {
+  log.group.open("image-exporter");
   try {
     const config = { ...defaultConfig, ...userConfig };
     windowLogging = config.enableWindowLogging;
@@ -3656,19 +3660,19 @@ async function capture(elements, userConfig = defaultConfig) {
     const totalElements = await determineTotalElements(elements);
     if (originalLength !== elements.length)
       log.verbose(
-        "skipping capture of hidden elements: ",
+        "Skipping capture of hidden elements: ",
         originalLength - elements.length
       );
-    log.verbose("element to capture", elements.length);
+    log.verbose("Element to capture", elements.length);
     if (userConfig.corsProxyBaseUrl) await corsProxy.run(config, elements);
     let images = [];
     let filenames = [];
     let imageNumber = 1;
     for (const element of elements) {
       const imageOptions = await getImageOptions(element, config);
-      log.verbose("image options", imageOptions);
+      log.verbose("Image options", imageOptions);
       if (imageOptions.scale instanceof Array) {
-        log.verbose("multi-scale capture");
+        log.verbose("Multi-scale capture");
         imageOptions.includeScaleInLabel = true;
         for (const scale of imageOptions.scale) {
           log.progress(imageNumber++, totalElements);
@@ -3681,7 +3685,7 @@ async function capture(elements, userConfig = defaultConfig) {
         }
       } else if (typeof imageOptions.scale === "number") {
         log.progress(imageNumber++, totalElements);
-        log.verbose("single-scale capture");
+        log.verbose("Single-scale capture");
         const image = await captureElement(
           element,
           imageOptions,
@@ -3690,12 +3694,14 @@ async function capture(elements, userConfig = defaultConfig) {
         images.push(image);
       }
     }
-    if (userConfig.downloadImages) downloadImages(images, config);
+    if (userConfig.downloadImages) await downloadImages(images, config);
     if (userConfig.corsProxyBaseUrl) await corsProxy.cleanUp();
     return images;
   } catch (error) {
     log.error(error);
     return null;
+  } finally {
+    log.group.close();
   }
 }
 if (typeof window !== "undefined") {

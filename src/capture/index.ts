@@ -20,6 +20,7 @@ export async function capture(
   elements: HTMLElement[] | NodeListOf<HTMLElement> | HTMLElement,
   userConfig: Partial<Config> = defaultConfig
 ): Promise<Image[] | null> {
+  log.group.open("image-exporter");
   try {
     /* --------------------------------- Config --------------------------------- */
     const config = { ...defaultConfig, ...userConfig };
@@ -36,10 +37,10 @@ export async function capture(
 
     if (originalLength !== elements.length)
       log.verbose(
-        "skipping capture of hidden elements: ",
+        "Skipping capture of hidden elements: ",
         originalLength - elements.length
       );
-    log.verbose("element to capture", elements.length);
+    log.verbose("Element to capture", elements.length);
 
     /* ------------------------------- CORS proxy ------------------------------- */
     if (userConfig.corsProxyBaseUrl) await corsProxy.run(config, elements);
@@ -51,11 +52,11 @@ export async function capture(
 
     for (const element of elements) {
       const imageOptions = await getImageOptions(element, config);
-      log.verbose("image options", imageOptions);
+      log.verbose("Image options", imageOptions);
 
       if (imageOptions.scale instanceof Array) {
         /* --------------------------- Multi-scale capture -------------------------- */
-        log.verbose("multi-scale capture");
+        log.verbose("Multi-scale capture");
 
         imageOptions.includeScaleInLabel = true;
 
@@ -72,7 +73,7 @@ export async function capture(
       } else if (typeof imageOptions.scale === "number") {
         log.progress(imageNumber++, totalElements);
         /* -------------------------- Single scale capture -------------------------- */
-        log.verbose("single-scale capture");
+        log.verbose("Single-scale capture");
 
         const image = await captureElement(
           element,
@@ -85,7 +86,7 @@ export async function capture(
     }
 
     /* -------------------------------- Download -------------------------------- */
-    if (userConfig.downloadImages) downloadImages(images, config);
+    if (userConfig.downloadImages) await downloadImages(images, config);
 
     /* --------------------------- Clean up CORS proxy -------------------------- */
     if (userConfig.corsProxyBaseUrl) await corsProxy.cleanUp();
@@ -95,5 +96,7 @@ export async function capture(
   } catch (error) {
     log.error(error);
     return null;
+  } finally {
+    log.group.close();
   }
 }
