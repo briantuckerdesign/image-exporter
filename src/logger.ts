@@ -5,6 +5,10 @@ export const log = {
   error: (...messages: any[]) => logAction(messages, "error"),
   verbose: (...messages: any[]) => logAction(messages, "verbose"),
   progress: (progress: number, total: number) => logProgress(progress, total),
+  group: {
+    open: (...messages: any[]) => logAction(messages, "group"),
+    close: (...messages: any[]) => logAction(messages, "groupEnd"),
+  },
 };
 
 async function logAction(messages: any[], type: LogType = "info") {
@@ -28,6 +32,12 @@ async function logAction(messages: any[], type: LogType = "info") {
         console.log(...messages);
       }
       break;
+    case "group":
+      console.group(...messages);
+      break;
+    case "groupEnd":
+      console.groupEnd();
+      break;
   }
 
   if (windowLogging) window.imageExporterLogs.push({ message: combinedMessage, type });
@@ -39,7 +49,7 @@ async function logProgress(progress: number, total: number) {
   }
 }
 
-type LogType = "info" | "error" | "verbose" | "progress";
+type LogType = "info" | "error" | "verbose" | "progress" | "group" | "groupEnd";
 
 type Log = {
   message: string;
