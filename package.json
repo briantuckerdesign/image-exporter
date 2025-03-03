@@ -1,6 +1,6 @@
 {
   "name": "image-exporter",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Easily download one or more DOM elements as images",
   "main": "src/index.ts",
   "type": "module",

@@ -4288,14 +4288,14 @@ async function getImageOptions(element, config) {
     try {
       let format = element.dataset.format || config.format;
       format = format.trim().toLowerCase();
-      if (format === "jpg" || format === "png" || format === "svg") {
+      if (format === "jpg" || format === "png" || format === "svg" || format === "webp") {
         return format;
       } else {
         throw new Error(
           `ImageExporter: provided format is not valid.
             Provided: ${format}
             Element: ${element}
-            Accepted values: jpg, png, svg
+            Accepted values: jpg, png, svg, 
             Defaulting to: ${config.format}`
         );
       }
