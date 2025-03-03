@@ -1,6 +1,6 @@
 {
   "name": "image-exporter",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Easily download one or more DOM elements as images",
   "main": "src/index.ts",
   "type": "module",
@@ -48,6 +48,6 @@
     "concurrently": "^9.1.2",
     "http-server": "^14.1.1",
     "typescript": "^5.7.3",
-    "vite": "^5.4.14"
+    "vite": "^6.2.0"
   }
 }
