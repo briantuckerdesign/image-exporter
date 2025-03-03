@@ -9,12 +9,13 @@ import { ImageOptions, Label } from "../types";
  * If it doesn't, the function will start with "-2" and increment the number until a unique filename is found.
  */
 export function handleFileNames(imageOptions: ImageOptions, filenames: string[]): Label {
-  // Finish alterting filenames before checking for uniqueness
+  // Finish altering filenames before checking for uniqueness
   let proposedFilename = imageOptions.label;
   // Add scale to filename if includeScaleInLabel is true
   if (imageOptions.includeScaleInLabel) proposedFilename += `_@${imageOptions.scale}x`;
   // Add format to filename last
-  proposedFilename += `.${imageOptions.format}`;
+  const extension = `.${imageOptions.format}`;
+  proposedFilename += extension;
 
   // If filename is unique, add it to array and return as-is
   if (!filenames.includes(proposedFilename)) {
@@ -31,21 +32,22 @@ export function handleFileNames(imageOptions: ImageOptions, filenames: string[])
     const baseFilename = proposedFilename.replace(numberPattern, "");
     let counter = parseInt(match[1], 10);
 
-    while (filenames.includes(`${baseFilename}-${counter}`)) {
+    while (filenames.includes(`${baseFilename}-${counter}${extension}`)) {
       counter++;
     }
 
-    const newFilename = `${baseFilename}-${counter}`;
+    const newFilename = `${baseFilename}-${counter}${extension}`;
     filenames.push(newFilename);
     return newFilename;
   } else {
-    // File doesn't end with -n, start with -1 and increment if needed
+    // File doesn't end with -n, start with -2 and increment if needed
+    const baseFilename = proposedFilename.replace(extension, "");
     let counter = 2;
-    while (filenames.includes(`${proposedFilename}-${counter}`)) {
+    while (filenames.includes(`${baseFilename}-${counter}${extension}`)) {
       counter++;
     }
 
-    const newFilename = `${proposedFilename}-${counter}`;
+    const newFilename = `${baseFilename}-${counter}${extension}`;
     filenames.push(newFilename);
     return newFilename;
   }

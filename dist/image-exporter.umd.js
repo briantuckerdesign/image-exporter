@@ -782,7 +782,8 @@
   function handleFileNames(imageOptions, filenames) {
     let proposedFilename = imageOptions.label;
     if (imageOptions.includeScaleInLabel) proposedFilename += `_@${imageOptions.scale}x`;
-    proposedFilename += `.${imageOptions.format}`;
+    const extension = `.${imageOptions.format}`;
+    proposedFilename += extension;
     if (!filenames.includes(proposedFilename)) {
       filenames.push(proposedFilename);
       return proposedFilename;
@@ -792,18 +793,19 @@
     if (match) {
       const baseFilename = proposedFilename.replace(numberPattern, "");
       let counter = parseInt(match[1], 10);
-      while (filenames.includes(`${baseFilename}-${counter}`)) {
+      while (filenames.includes(`${baseFilename}-${counter}${extension}`)) {
         counter++;
       }
-      const newFilename = `${baseFilename}-${counter}`;
+      const newFilename = `${baseFilename}-${counter}${extension}`;
       filenames.push(newFilename);
       return newFilename;
     } else {
+      const baseFilename = proposedFilename.replace(extension, "");
       let counter = 2;
-      while (filenames.includes(`${proposedFilename}-${counter}`)) {
+      while (filenames.includes(`${baseFilename}-${counter}${extension}`)) {
         counter++;
       }
-      const newFilename = `${proposedFilename}-${counter}`;
+      const newFilename = `${baseFilename}-${counter}${extension}`;
       filenames.push(newFilename);
       return newFilename;
     }
