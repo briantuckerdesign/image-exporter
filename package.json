@@ -1,6 +1,6 @@
 {
   "name": "image-exporter",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Easily download one or more DOM elements as images",
   "main": "src/index.ts",
   "type": "module",
@@ -41,8 +41,8 @@
   "dependencies": {
     "@types/downloadjs": "^1.4.6",
     "downloadjs": "^1.4.7",
-    "html-to-image": "^1.11.13",
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "modern-screenshot": "^4.6.0"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

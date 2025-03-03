@@ -79,7 +79,7 @@ Image options can also be set at the `config` level and will serve as the defaul
 	/** Label for image. Does not include file extension or scale. */
 	label:  string;
 	/** File format, jpg, png, or svg. */
-	format:  "jpg"  |  "png"  |  "svg";
+	format:  "jpg"  |  "png"  |  "svg" | "webp";
 	/** Scale of image. Can be a number or a comma-separated list of numbers. */
 	scale:  number  |  number[];
 	/** Quality of image. 0.0 to 1.0, only applies to jpg.*/
@@ -129,7 +129,7 @@ Config options are set in the `config` object passed to the `capture` function.
 
 ## Built using
 
-- [`html-to-image`](https://github.com/bubkoo/html-to-image)
+- [`modern-screenshot`](https://github.com/qq15725/modern-screenshot/tree/main)
 
 - [`jszip`](https://github.com/Stuk/jszip)
 
