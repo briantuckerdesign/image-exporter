@@ -1,7 +1,7 @@
-import * as htmlToImage from "html-to-image";
 import { Image, ParsedImageOptions } from "../types";
 import { handleFileNames } from "./handle-filenames";
-import { Options } from "html-to-image/lib/types";
+import * as modernScreenshot from "modern-screenshot";
+
 /**
  * captureElement
  *
@@ -15,11 +15,11 @@ export async function captureElement(
   try {
     let dataURL = "";
     // Final settings for capturing images.
-    let htmlToImageOptions: Options = {
+    let htmlToImageOptions: modernScreenshot.Options = {
       // Ensure quality is a number
       quality: imageOptions.quality,
       // Ensure scale is a number
-      pixelRatio: imageOptions.scale,
+      scale: imageOptions.scale,
       // Ignores elements with data-ignore-capture attribute
       filter: filter,
     };
@@ -41,13 +41,16 @@ export async function captureElement(
     // Captures image based on format
     switch (imageOptions.format) {
       case "jpg":
-        dataURL = await htmlToImage.toJpeg(element, htmlToImageOptions);
+        dataURL = await modernScreenshot.domToJpeg(element, htmlToImageOptions);
         break;
       case "png":
-        dataURL = await htmlToImage.toPng(element, htmlToImageOptions);
+        dataURL = await modernScreenshot.domToPng(element, htmlToImageOptions);
         break;
       case "svg":
-        dataURL = await htmlToImage.toSvg(element, htmlToImageOptions);
+        dataURL = await modernScreenshot.domToSvg(element, htmlToImageOptions);
+        break;
+      case "webp":
+        dataURL = await modernScreenshot.domToWebp(element, htmlToImageOptions);
         break;
     }
 

@@ -44,7 +44,7 @@ export interface Image {
 }
 
 export type Label = string;
-export type Format = "jpg" | "png" | "svg";
+export type Format = "jpg" | "png" | "svg" | "webp";
 export type Scale = number | number[];
 export type Quality = number;
 export type IncludeScaleInLabel = boolean;
