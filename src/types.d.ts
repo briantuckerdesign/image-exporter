@@ -30,7 +30,7 @@ export interface Config extends ImageOptions {
   /** Enable window logging for use by external scripts. */
   enableWindowLogging: boolean;
   /** Enable verbose logging for debugging. */
-  loggingLevel: "none" | "info" | "error" | "verbose";
+  loggingLevel: LoggingLevel;
 }
 
 export interface ParsedImageOptions extends ImageOptions {
@@ -48,3 +48,4 @@ export type Format = "jpg" | "png" | "svg";
 export type Scale = number | number[];
 export type Quality = number;
 export type IncludeScaleInLabel = boolean;
+export type LoggingLevel = "none" | "info" | "error" | "verbose";

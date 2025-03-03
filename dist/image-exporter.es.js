@@ -3494,8 +3494,15 @@ async function getImageOptions(element, config) {
     try {
       const label = element.dataset.label || config.defaultImageLabel;
       if (label === "") return config.defaultImageLabel;
+      const endsWithSpecial = label.endsWith("@#x");
+      let cleanedLabel = label;
       const regex = /[^a-zA-Z0-9-_]/g;
-      return label.replace(regex, "");
+      if (endsWithSpecial) {
+        cleanedLabel = label.slice(0, -3).replace(regex, "") + "@#x";
+      } else {
+        cleanedLabel = label.replace(regex, "");
+      }
+      return cleanedLabel;
     } catch (error) {
       console.error(error);
       return config.defaultImageLabel;
