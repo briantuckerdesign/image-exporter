@@ -56,14 +56,16 @@ export async function getImageOptions(
       if (label === "") return config.defaultImageLabel;
 
       // Check if the label ends with '@#x'
-      const endsWithSpecial = label.endsWith("@#x");
+      const endsWithSpecial = /@\d+x$/.test(label);
       let cleanedLabel = label;
 
       // Allowed characters: a-z, A-Z, 0-9, -, _
-      // Remove all other characters using regex, except '@#x' at the end
+      // Remove all other characters using regex, except '@Nx' at the end
       const regex = /[^a-zA-Z0-9-_]/g;
       if (endsWithSpecial) {
-        cleanedLabel = label.slice(0, -3).replace(regex, "") + "@#x";
+        const match = label.match(/@\d+x$/);
+        if (!match) return config.defaultImageLabel;
+        cleanedLabel = label.slice(0, -match[0].length).replace(regex, "") + match[0];
       } else {
         cleanedLabel = label.replace(regex, "");
       }

@@ -3499,11 +3499,13 @@
       try {
         const label = element.dataset.label || config.defaultImageLabel;
         if (label === "") return config.defaultImageLabel;
-        const endsWithSpecial = label.endsWith("@#x");
+        const endsWithSpecial = /@\d+x$/.test(label);
         let cleanedLabel = label;
         const regex = /[^a-zA-Z0-9-_]/g;
         if (endsWithSpecial) {
-          cleanedLabel = label.slice(0, -3).replace(regex, "") + "@#x";
+          const match = label.match(/@\d+x$/);
+          if (!match) return config.defaultImageLabel;
+          cleanedLabel = label.slice(0, -match[0].length).replace(regex, "") + match[0];
         } else {
           cleanedLabel = label.replace(regex, "");
         }
