@@ -1,4 +1,4 @@
-# image-exporter [v1.0.9]
+# image-exporter [v1.1.0]
 
 image-exporter is a client-side javascript tool that downloads DOM elements as images. It can be imported using your favorite package manager or used directly the window.
 
