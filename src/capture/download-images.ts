@@ -1,6 +1,7 @@
 import { Config, Image, Label } from "../types";
 import download from "downloadjs";
 import JSZip from "jszip";
+import { defaultConfig } from "../config";
 
 /**
  * downloadImages
@@ -9,13 +10,20 @@ import JSZip from "jszip";
  *
  * If multiple images are provided, they will be zipped and downloaded as a file.
  */
-export async function downloadImages(images: Image[], config: Config) {
-  if (images.length === 1) {
-    const image = images[0];
+export async function downloadImages(
+  images: Image[],
+  userConfig: Config = defaultConfig
+) {
+  const config = userConfig ? { ...defaultConfig, ...userConfig } : defaultConfig;
 
+  // Ensure unique filenames before downloading
+  const uniqueImages = ensureUniqueFileNames(images);
+
+  if (uniqueImages.length === 1) {
+    const image = uniqueImages[0];
     await download(image.dataURL, image.fileName);
-  } else if (images.length > 1) {
-    const imagesBlob = await zipUpImages(images);
+  } else if (uniqueImages.length > 1) {
+    const imagesBlob = await zipUpImages(uniqueImages);
     if (imagesBlob) await download(imagesBlob, parseLabel(config));
   }
 }
@@ -66,4 +74,42 @@ function parseLabel(config: Config): Label {
     console.error(error);
     return "images";
   }
+}
+
+/**
+ * ensureUniqueFileNames
+ *
+ * Ensures all image filenames are unique by adding -2, -3, etc. to duplicates
+ * before the file extension.
+ */
+function ensureUniqueFileNames(images: Image[]): Image[] {
+  const fileNameMap = new Map<string, number>();
+
+  return images.map((image) => {
+    const { fileName } = image;
+
+    // Split the filename into base and extension
+    const lastDotIndex = fileName.lastIndexOf(".");
+    const baseName = lastDotIndex !== -1 ? fileName.substring(0, lastDotIndex) : fileName;
+    const extension = lastDotIndex !== -1 ? fileName.substring(lastDotIndex) : "";
+
+    // Check if this base filename has been seen before
+    if (!fileNameMap.has(fileName)) {
+      fileNameMap.set(fileName, 1);
+      return image;
+    }
+
+    // If it's a duplicate, increment the counter and create a new filename
+    const count = fileNameMap.get(fileName)! + 1;
+    fileNameMap.set(fileName, count);
+
+    // Create new filename with -2, -3, etc. before the extension
+    const newFileName = `${baseName}-${count}${extension}`;
+
+    // Return a new image object with the updated filename
+    return {
+      ...image,
+      fileName: newFileName,
+    };
+  });
 }

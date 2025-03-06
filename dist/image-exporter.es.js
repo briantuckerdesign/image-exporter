@@ -4083,12 +4083,30 @@ function requireJszip_min() {
 }
 var jszip_minExports = requireJszip_min();
 const JSZip = /* @__PURE__ */ getDefaultExportFromCjs(jszip_minExports);
-async function downloadImages(images, config) {
-  if (images.length === 1) {
-    const image = images[0];
+const defaultImageOptions = {
+  label: "image",
+  format: "jpg",
+  scale: 1,
+  quality: 1,
+  includeScaleInLabel: false
+};
+const defaultConfig = {
+  ...defaultImageOptions,
+  downloadImages: true,
+  defaultImageLabel: "image",
+  zipLabel: "images",
+  corsProxyBaseUrl: "",
+  enableWindowLogging: true,
+  loggingLevel: "none"
+};
+async function downloadImages(images, userConfig = defaultConfig) {
+  const config = userConfig ? { ...defaultConfig, ...userConfig } : defaultConfig;
+  const uniqueImages = ensureUniqueFileNames(images);
+  if (uniqueImages.length === 1) {
+    const image = uniqueImages[0];
     await download(image.dataURL, image.fileName);
-  } else if (images.length > 1) {
-    const imagesBlob = await zipUpImages(images);
+  } else if (uniqueImages.length > 1) {
+    const imagesBlob = await zipUpImages(uniqueImages);
     if (imagesBlob) await download(imagesBlob, parseLabel(config));
   }
 }
@@ -4120,6 +4138,26 @@ function parseLabel(config) {
     console.error(error);
     return "images";
   }
+}
+function ensureUniqueFileNames(images) {
+  const fileNameMap = /* @__PURE__ */ new Map();
+  return images.map((image) => {
+    const { fileName } = image;
+    const lastDotIndex = fileName.lastIndexOf(".");
+    const baseName = lastDotIndex !== -1 ? fileName.substring(0, lastDotIndex) : fileName;
+    const extension = lastDotIndex !== -1 ? fileName.substring(lastDotIndex) : "";
+    if (!fileNameMap.has(fileName)) {
+      fileNameMap.set(fileName, 1);
+      return image;
+    }
+    const count = fileNameMap.get(fileName) + 1;
+    fileNameMap.set(fileName, count);
+    const newFileName = `${baseName}-${count}${extension}`;
+    return {
+      ...image,
+      fileName: newFileName
+    };
+  });
 }
 const log = {
   info: (...messages) => logAction(messages, "info"),
@@ -4393,22 +4431,6 @@ async function getImageOptions(element, config) {
     }
   }
 }
-const defaultImageOptions = {
-  label: "image",
-  format: "jpg",
-  scale: 1,
-  quality: 1,
-  includeScaleInLabel: false
-};
-const defaultConfig = {
-  ...defaultImageOptions,
-  downloadImages: true,
-  defaultImageLabel: "image",
-  zipLabel: "images",
-  corsProxyBaseUrl: "",
-  enableWindowLogging: true,
-  loggingLevel: "none"
-};
 function removeHiddenElements(elements) {
   elements = Array.from(elements);
   return elements.filter((element) => isVisible(element));
@@ -4502,7 +4524,9 @@ async function capture(elements, userConfig = defaultConfig) {
 }
 if (typeof window !== "undefined") {
   window.imageExporter = capture;
+  window.imageExporterDownload = downloadImages;
 }
 export {
-  capture
+  capture,
+  downloadImages
 };
