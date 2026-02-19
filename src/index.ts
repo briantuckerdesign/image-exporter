@@ -14,3 +14,17 @@ if (typeof window !== "undefined") {
 
 /** Exports for use as an imported package */
 export { capture, downloadImages };
+
+/** Type exports */
+export type {
+  ImageOptions,
+  Config,
+  ParsedImageOptions,
+  Image,
+  Label,
+  Format,
+  Scale,
+  Quality,
+  IncludeScaleInLabel,
+  LoggingLevel,
+} from "./types";
