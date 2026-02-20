@@ -1,5 +1,4 @@
 import { Config, Image, Label } from "../types";
-import download from "downloadjs";
 import JSZip from "jszip";
 import { defaultConfig } from "../config";
 
@@ -12,7 +11,7 @@ import { defaultConfig } from "../config";
  */
 export async function downloadImages(
   images: Image[],
-  userConfig: Config = defaultConfig
+  userConfig: Config = defaultConfig,
 ) {
   const config = userConfig ? { ...defaultConfig, ...userConfig } : defaultConfig;
 
@@ -21,10 +20,24 @@ export async function downloadImages(
 
   if (uniqueImages.length === 1) {
     const image = uniqueImages[0];
-    await download(image.dataURL, image.fileName);
+    triggerDownload(image.dataURL, image.fileName);
   } else if (uniqueImages.length > 1) {
     const imagesBlob = await zipUpImages(uniqueImages);
-    if (imagesBlob) await download(imagesBlob, parseLabel(config));
+    if (imagesBlob) triggerDownload(imagesBlob, parseLabel(config));
+  }
+}
+
+function triggerDownload(data: string | Blob, fileName: string): void {
+  const url = typeof data === "string" ? data : URL.createObjectURL(data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  if (typeof data !== "string") {
+    setTimeout(() => URL.revokeObjectURL(url), 250);
   }
 }
 

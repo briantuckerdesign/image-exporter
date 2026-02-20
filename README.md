@@ -181,9 +181,8 @@ Set image options on elements using these data attributes:
 
 - [`modern-screenshot`](https://github.com/qq15725/modern-screenshot)
 - [`jszip`](https://github.com/Stuk/jszip)
-- [`downloadjs`](https://github.com/rndme/download)
 
-Bundled with Vite and written in TypeScript.
+Bundled with Bun and written in TypeScript.
 
 ## License
 
