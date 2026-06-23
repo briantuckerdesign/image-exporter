@@ -33,7 +33,7 @@ export async function capture(
     const originalLength = elements.length;
     elements = removeHiddenElements(elements);
 
-    const totalElements = await determineTotalElements(elements);
+    const totalElements = await determineTotalElements(elements, config);
 
     if (originalLength !== elements.length)
       log.verbose(
