@@ -34,6 +34,35 @@ test("onProgress fires once per capture with (completed, total)", async () => {
   ]);
 });
 
+test("a pre-aborted signal captures nothing", async () => {
+  const controller = new AbortController();
+  controller.abort();
+  const els = [document.createElement("div"), document.createElement("div")];
+
+  const result = await capture(els, { ...baseConfig, signal: controller.signal });
+
+  expect(result).toEqual([]);
+});
+
+test("aborting mid-run returns the images captured so far", async () => {
+  const controller = new AbortController();
+  const els = [
+    document.createElement("div"),
+    document.createElement("div"),
+    document.createElement("div"),
+  ];
+
+  const result = await capture(els, {
+    ...baseConfig,
+    signal: controller.signal,
+    onProgress: (completed) => {
+      if (completed === 1) controller.abort(); // cancel after the first capture
+    },
+  });
+
+  expect(result?.length).toBe(1);
+});
+
 test("onProgress counts multi-scale captures", async () => {
   const calls: Array<[number, number]> = [];
   const el = document.createElement("div");

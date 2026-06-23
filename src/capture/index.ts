@@ -70,7 +70,8 @@ export async function capture(
       }
     };
 
-    for (const element of elements) {
+    captureLoop: for (const element of elements) {
+      if (config.signal?.aborted) break;
       const imageOptions = await getImageOptions(element, config);
       log.verbose("Image options", imageOptions);
 
@@ -81,6 +82,7 @@ export async function capture(
         imageOptions.includeScaleInLabel = true;
 
         for (const scale of imageOptions.scale) {
+          if (config.signal?.aborted) break captureLoop;
           await tryCapture(element, {
             ...imageOptions,
             scale,
@@ -92,6 +94,13 @@ export async function capture(
 
         await tryCapture(element, imageOptions as ParsedImageOptions);
       }
+    }
+
+    /* -------------------------------- Aborted? -------------------------------- */
+    // Return whatever was captured so far; skip downloading a partial result.
+    if (config.signal?.aborted) {
+      log.verbose("Capture aborted; returning", images.length, "image(s)");
+      return images;
     }
 
     /* -------------------------------- Download -------------------------------- */

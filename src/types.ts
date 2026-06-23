@@ -37,6 +37,11 @@ export interface Config extends ImageOptions {
    * `window.imageExporterProgress`.
    */
   onProgress?: (completed: number, total: number) => void;
+  /**
+   * Abort an in-progress capture. When the signal fires, the loop stops and
+   * the images captured so far are returned (download is skipped).
+   */
+  signal?: AbortSignal;
 }
 
 export interface ParsedImageOptions extends ImageOptions {
