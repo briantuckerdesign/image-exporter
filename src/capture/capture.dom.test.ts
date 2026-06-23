@@ -63,6 +63,28 @@ test("aborting mid-run returns the images captured so far", async () => {
   expect(result?.length).toBe(1);
 });
 
+test("output defaults to dataurl (no blob)", async () => {
+  const [img] = (await capture(document.createElement("div"), baseConfig)) ?? [];
+  expect(img.dataURL).toBe("data:image/png;base64,AAA");
+  expect(img.blob).toBeUndefined();
+});
+
+test('output "both" populates dataURL and blob', async () => {
+  const [img] =
+    (await capture(document.createElement("div"), { ...baseConfig, output: "both" })) ??
+    [];
+  expect(img.dataURL).toBe("data:image/png;base64,AAA");
+  expect(img.blob).toBeInstanceOf(Blob);
+});
+
+test('output "blob" drops the dataURL and keeps only the blob', async () => {
+  const [img] =
+    (await capture(document.createElement("div"), { ...baseConfig, output: "blob" })) ??
+    [];
+  expect(img.dataURL).toBe("");
+  expect(img.blob).toBeInstanceOf(Blob);
+});
+
 test("onProgress counts multi-scale captures", async () => {
   const calls: Array<[number, number]> = [];
   const el = document.createElement("div");

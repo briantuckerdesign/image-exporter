@@ -21,7 +21,8 @@ export async function downloadImages(
 
   if (uniqueImages.length === 1) {
     const image = uniqueImages[0];
-    triggerDownload(image.dataURL, image.fileName);
+    // Prefer the Blob when present (e.g. output: "blob" clears the dataURL).
+    triggerDownload(image.blob ?? image.dataURL, image.fileName);
   } else if (uniqueImages.length > 1) {
     const imagesBlob = await zipUpImages(uniqueImages);
     if (imagesBlob) triggerDownload(imagesBlob, parseLabel(config));
@@ -51,11 +52,14 @@ async function zipUpImages(images: Image[]): Promise<Blob | undefined> {
   const zip = new JSZip();
 
   try {
-    // Loop through each image tuple and add to the zip
+    // Loop through each image and add to the zip, preferring the Blob if present.
     images.forEach((image) => {
-      // Extract the content from the data URL
-      const content = image.dataURL.split(",")[1]; // Assumes base64 encoding
-      zip.file(image.fileName, content, { base64: true });
+      if (image.blob) {
+        zip.file(image.fileName, image.blob);
+      } else {
+        const content = image.dataURL.split(",")[1]; // assumes base64 encoding
+        zip.file(image.fileName, content, { base64: true });
+      }
     });
   } catch (error) {
     console.error("Image Exporter - Error adding images to ZIP:", error);

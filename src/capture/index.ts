@@ -1,7 +1,8 @@
 import { captureElement } from "./capture-element";
 import { downloadImages } from "./download-images";
 import { corsProxy } from "../cors-proxy";
-import { Config, Image, ParsedImageOptions } from "../types";
+import { Config, Image, Output, ParsedImageOptions } from "../types";
+import { dataUrlToBlob } from "./data-url-to-blob";
 import { getImageOptions } from "./get-image-options";
 import { defaultConfig } from "../config";
 import { removeHiddenElements } from "./remove-hidden-elements";
@@ -60,9 +61,13 @@ export async function capture(
       options: ParsedImageOptions,
     ): Promise<void> => {
       try {
-        images.push(
-          await captureElement(element, options, seen, config.screenshotOptions),
+        const image = await captureElement(
+          element,
+          options,
+          seen,
+          config.screenshotOptions,
         );
+        images.push(applyOutput(image, config.output));
       } catch (error) {
         log.error(error);
       } finally {
@@ -120,4 +125,15 @@ export async function capture(
     if (userConfig.corsProxyBaseUrl) await corsProxy.cleanUp();
     log.group.close();
   }
+}
+
+/**
+ * Shapes a captured image per the configured output mode. `"blob"` drops the
+ * base64 dataURL to save memory (download still works via the Blob).
+ */
+function applyOutput(image: Image, output: Output | undefined): Image {
+  if (!output || output === "dataurl") return image;
+  const blob = dataUrlToBlob(image.dataURL);
+  if (output === "blob") return { ...image, dataURL: "", blob };
+  return { ...image, blob }; // "both"
 }

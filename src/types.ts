@@ -51,6 +51,15 @@ export interface Config extends ImageOptions {
    * `data-ignore-capture` filter (both must pass).
    */
   screenshotOptions?: Partial<ModernScreenshotOptions>;
+  /**
+   * What the returned images carry:
+   * - `"dataurl"` (default): `dataURL` only
+   * - `"blob"`: `blob` only (no base64 retained — lighter on memory)
+   * - `"both"`: `dataURL` and `blob`
+   *
+   * Downloading works in every mode.
+   */
+  output?: Output;
 }
 
 export interface ParsedImageOptions extends ImageOptions {
@@ -59,9 +68,15 @@ export interface ParsedImageOptions extends ImageOptions {
 }
 
 export interface Image {
+  /** base64 data URL. Empty when `output` is `"blob"`. */
   dataURL: string;
   fileName: string;
+  /** Populated when `config.output` is `"blob"` or `"both"`. */
+  blob?: Blob;
 }
+
+/** What the returned Image carries. Default `"dataurl"`. */
+export type Output = "dataurl" | "blob" | "both";
 
 export type Label = string;
 export type Format = "jpg" | "png" | "svg" | "webp";
