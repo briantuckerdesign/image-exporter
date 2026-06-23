@@ -1,5 +1,8 @@
 import { windowLogging, loggingLevel } from "./capture";
 
+/** This package can be imported in non-DOM contexts (Node / SSR). */
+const hasWindow = typeof window !== "undefined";
+
 export const log = {
   info: (...messages: any[]) => logAction(messages, "info"),
   error: (...messages: any[]) => logAction(messages, "error"),
@@ -40,11 +43,12 @@ async function logAction(messages: any[], type: LogType = "info") {
       break;
   }
 
-  if (windowLogging) window.imageExporterLogs.push({ message: combinedMessage, type });
+  if (windowLogging && hasWindow)
+    window.imageExporterLogs.push({ message: combinedMessage, type });
 }
 
 async function logProgress(progress: number, total: number) {
-  if (windowLogging) {
+  if (windowLogging && hasWindow) {
     window.imageExporterProgress.push([progress, total]);
   }
 }
@@ -67,5 +71,7 @@ declare global {
   }
 }
 
-window.imageExporterLogs = [];
-window.imageExporterProgress = [];
+if (hasWindow) {
+  window.imageExporterLogs = [];
+  window.imageExporterProgress = [];
+}
