@@ -1,7 +1,7 @@
 # image-exporter
 
 [![npm version](https://img.shields.io/npm/v/image-exporter.svg)](https://www.npmjs.com/package/image-exporter)
-[![license](https://img.shields.io/npm/l/image-exporter.svg)](https://github.com/briantuckerdesign/image-exporter/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/image-exporter.svg)](https://github.com/briantuckerdesign/image-exporter/blob/main/LICENSE.md)
 
 A client-side JavaScript tool that downloads DOM elements as images. It can be imported using your favorite package manager or attached directly to the window.
 
@@ -34,7 +34,11 @@ const images = await capture(artboards, {
 ### Browser
 
 ```html
-<script src="your-path/image-exporter.umd.js" type="text/javascript"></script>
+<!-- Self-hosted -->
+<script src="your-path/index.browser.js" type="text/javascript"></script>
+
+<!-- Or via CDN -->
+<script src="https://unpkg.com/image-exporter" type="text/javascript"></script>
 
 <div class="artboard">I will be downloaded.</div>
 
@@ -186,4 +190,4 @@ Bundled with Bun and written in TypeScript.
 
 ## License
 
-ISC License - see [LICENSE](LICENSE) for details.
+Apache-2.0 License - see [LICENSE.md](LICENSE.md) for details.
