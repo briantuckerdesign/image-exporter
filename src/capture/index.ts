@@ -86,7 +86,7 @@ export async function capture(
     }
 
     /* -------------------------------- Download -------------------------------- */
-    if (userConfig.downloadImages) await downloadImages(images, config);
+    if (config.downloadImages) await downloadImages(images, config);
 
     /* --------------------------- Clean up CORS proxy -------------------------- */
     if (userConfig.corsProxyBaseUrl) await corsProxy.cleanUp();
