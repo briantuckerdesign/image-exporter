@@ -12,9 +12,9 @@ export async function cleanUpCorsProxy() {
 async function restoreCSS() {
   const styleElements = document.querySelectorAll("style[original-link-element]");
 
-  for (let styleElement of styleElements) {
+  for (const styleElement of styleElements) {
     const originalLinkElementHTML = decodeURIComponent(
-      styleElement.getAttribute("original-link-element")!
+      styleElement.getAttribute("original-link-element")!,
     );
 
     // Create a temporary container to parse the HTML string
@@ -31,10 +31,10 @@ async function restoreCSS() {
 
 async function restoreImages() {
   const imageElements = document.querySelectorAll(
-    "img[original-src]"
+    "img[original-src]",
   ) as NodeListOf<HTMLImageElement>;
 
-  for (let imageElement of imageElements) {
+  for (const imageElement of imageElements) {
     const originalSrc = imageElement.getAttribute("original-src")!;
     imageElement.src = originalSrc;
     imageElement.removeAttribute("original-src");

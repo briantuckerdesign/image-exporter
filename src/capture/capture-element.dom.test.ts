@@ -29,7 +29,7 @@ const opts = (format: string): ParsedImageOptions =>
     scale: 1,
     quality: 1,
     includeScaleInLabel: false,
-  } as ParsedImageOptions);
+  }) as ParsedImageOptions;
 
 test("throws when the renderer fails instead of returning an empty image", async () => {
   shouldThrow = true;

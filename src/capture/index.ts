@@ -18,7 +18,7 @@ export let loggingLevel = "none";
  */
 export async function capture(
   elements: HTMLElement[] | NodeListOf<HTMLElement> | HTMLElement,
-  userConfig: Partial<Config> = defaultConfig
+  userConfig: Partial<Config> = defaultConfig,
 ): Promise<Image[] | null> {
   log.group.open("image-exporter");
   try {
@@ -38,7 +38,7 @@ export async function capture(
     if (originalLength !== elements.length)
       log.verbose(
         "Skipping capture of hidden elements: ",
-        originalLength - elements.length
+        originalLength - elements.length,
       );
     log.verbose("Element to capture", elements.length);
 
@@ -46,7 +46,7 @@ export async function capture(
     if (userConfig.corsProxyBaseUrl) await corsProxy.run(config, elements);
 
     /* --------------------------------- Capture -------------------------------- */
-    let images: Image[] = [];
+    const images: Image[] = [];
     const seen = new Set<string>();
     let imageNumber = 1;
 
@@ -57,7 +57,7 @@ export async function capture(
      */
     const tryCapture = async (
       element: HTMLElement,
-      options: ParsedImageOptions
+      options: ParsedImageOptions,
     ): Promise<void> => {
       log.progress(imageNumber++, totalElements);
       try {

@@ -12,7 +12,7 @@ export async function proxyCSS(config: Config) {
   const stylesheetElements = document.querySelectorAll('link[rel="stylesheet"]');
   log.verbose("stylesheet elements to proxy", stylesheetElements.length);
 
-  for (let stylesheetElement of stylesheetElements) {
+  for (const stylesheetElement of stylesheetElements) {
     const stylesheetURL = stylesheetElement.getAttribute("href");
 
     // Exclude data URLs, invalid URLs, and already proxied URLs
@@ -27,14 +27,14 @@ export async function proxyCSS(config: Config) {
     try {
       // Fetch the CSS content
       const response = await fetch(proxiedURL);
-      let cssContent = await response.text();
+      const cssContent = await response.text();
 
       // Insert the parsed CSS content into a <style> element
       const styleElement = document.createElement("style");
       styleElement.textContent = cssContent;
       styleElement.setAttribute(
         "original-link-element",
-        encodeURIComponent(stylesheetElement.outerHTML)
+        encodeURIComponent(stylesheetElement.outerHTML),
       );
 
       // Insert the <style> element directly after the original <link> element to easy restoration

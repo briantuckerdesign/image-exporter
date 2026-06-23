@@ -1,8 +1,7 @@
 # Continuous Integration
 #
 # Runs on every pull request and on pushes to main, so no change reaches main
-# without passing checks. CI gate: typecheck + test + build.
-# (Lint is added in a later layer.)
+# without passing checks. CI gate: lint + format + typecheck + test + build.
 name: CI
 
 on:
@@ -20,7 +19,7 @@ concurrency:
 
 jobs:
   verify:
-    name: Typecheck, test & build
+    name: Lint, test & build
     runs-on: ubuntu-latest
     steps:
       # The runner starts empty: first put our code on it.
@@ -37,6 +36,12 @@ jobs:
       # lockfile is out of sync with package.json. Reproducible, deterministic.
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Check formatting
+        run: bun run format:check
 
       - name: Typecheck
         run: bun run typecheck

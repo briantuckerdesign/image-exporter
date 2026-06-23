@@ -6,10 +6,17 @@
 import { capture } from "./capture";
 import { downloadImages } from "./capture/download-images";
 
+declare global {
+  interface Window {
+    imageExporter: typeof capture;
+    imageExporterDownload: typeof downloadImages;
+  }
+}
+
 /** Exports for use in browser */
 if (typeof window !== "undefined") {
-  (window as any).imageExporter = capture;
-  (window as any).imageExporterDownload = downloadImages;
+  window.imageExporter = capture;
+  window.imageExporterDownload = downloadImages;
 }
 
 /** Exports for use as an imported package */

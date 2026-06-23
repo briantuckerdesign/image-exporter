@@ -1,5 +1,5 @@
 export function removeHiddenElements(
-  elements: HTMLElement[] | NodeListOf<HTMLElement>
+  elements: HTMLElement[] | NodeListOf<HTMLElement>,
 ): HTMLElement[] {
   elements = Array.from(elements);
   return elements.filter((element) => isVisible(element));
