@@ -59,11 +59,14 @@ export async function capture(
       element: HTMLElement,
       options: ParsedImageOptions,
     ): Promise<void> => {
-      log.progress(imageNumber++, totalElements);
       try {
         images.push(await captureElement(element, options, seen));
       } catch (error) {
         log.error(error);
+      } finally {
+        const completed = imageNumber++;
+        log.progress(completed, totalElements);
+        config.onProgress?.(completed, totalElements);
       }
     };
 

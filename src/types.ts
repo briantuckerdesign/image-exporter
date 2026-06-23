@@ -31,6 +31,12 @@ export interface Config extends ImageOptions {
   enableWindowLogging: boolean;
   /** Enable verbose logging for debugging. */
   loggingLevel: LoggingLevel;
+  /**
+   * Called after each capture completes, with the number completed so far and
+   * the total number of captures. A package-friendly alternative to polling
+   * `window.imageExporterProgress`.
+   */
+  onProgress?: (completed: number, total: number) => void;
 }
 
 export interface ParsedImageOptions extends ImageOptions {
