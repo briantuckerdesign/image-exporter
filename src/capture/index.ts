@@ -94,15 +94,16 @@ export async function capture(
     /* -------------------------------- Download -------------------------------- */
     if (config.downloadImages) await downloadImages(images, config);
 
-    /* --------------------------- Clean up CORS proxy -------------------------- */
-    if (userConfig.corsProxyBaseUrl) await corsProxy.cleanUp();
-
     /** Return images optionally */
     return images;
   } catch (error) {
     log.error(error);
     return null;
   } finally {
+    /* --------------------------- Clean up CORS proxy -------------------------- */
+    // In finally so the live DOM is always restored, even if capture threw
+    // after the proxy mutated it.
+    if (userConfig.corsProxyBaseUrl) await corsProxy.cleanUp();
     log.group.close();
   }
 }
