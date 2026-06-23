@@ -50,6 +50,23 @@ export async function capture(
     const seen = new Set<string>();
     let imageNumber = 1;
 
+    /**
+     * Captures one element+scale, pushing the result on success. On failure it
+     * logs and skips so one bad element can't abort the batch or emit a corrupt
+     * (empty) image into the results.
+     */
+    const tryCapture = async (
+      element: HTMLElement,
+      options: ParsedImageOptions
+    ): Promise<void> => {
+      log.progress(imageNumber++, totalElements);
+      try {
+        images.push(await captureElement(element, options, seen));
+      } catch (error) {
+        log.error(error);
+      }
+    };
+
     for (const element of elements) {
       const imageOptions = await getImageOptions(element, config);
       log.verbose("Image options", imageOptions);
@@ -61,27 +78,16 @@ export async function capture(
         imageOptions.includeScaleInLabel = true;
 
         for (const scale of imageOptions.scale) {
-          log.progress(imageNumber++, totalElements);
-          const image = await captureElement(
-            element,
-            { ...imageOptions, scale: scale } as ParsedImageOptions,
-            seen
-          );
-
-          images.push(image);
+          await tryCapture(element, {
+            ...imageOptions,
+            scale,
+          } as ParsedImageOptions);
         }
       } else if (typeof imageOptions.scale === "number") {
-        log.progress(imageNumber++, totalElements);
         /* -------------------------- Single scale capture -------------------------- */
         log.verbose("Single-scale capture");
 
-        const image = await captureElement(
-          element,
-          imageOptions as ParsedImageOptions,
-          seen
-        );
-
-        images.push(image);
+        await tryCapture(element, imageOptions as ParsedImageOptions);
       }
     }
 
