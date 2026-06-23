@@ -60,7 +60,9 @@ export async function capture(
       options: ParsedImageOptions,
     ): Promise<void> => {
       try {
-        images.push(await captureElement(element, options, seen));
+        images.push(
+          await captureElement(element, options, seen, config.screenshotOptions),
+        );
       } catch (error) {
         log.error(error);
       } finally {

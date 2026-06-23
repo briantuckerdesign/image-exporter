@@ -1,3 +1,5 @@
+import type { Options as ModernScreenshotOptions } from "modern-screenshot";
+
 export interface ImageOptions {
   /** Label for image. Does not include file extension or scale. */
   label: Label;
@@ -42,6 +44,13 @@ export interface Config extends ImageOptions {
    * the images captured so far are returned (download is skipped).
    */
   signal?: AbortSignal;
+  /**
+   * Extra options passed through to modern-screenshot (fonts, width/height,
+   * pixelRatio, backgroundColor, etc.). `scale` and `quality` remain controlled
+   * by the per-image options; a `filter` here is combined with the built-in
+   * `data-ignore-capture` filter (both must pass).
+   */
+  screenshotOptions?: Partial<ModernScreenshotOptions>;
 }
 
 export interface ParsedImageOptions extends ImageOptions {
