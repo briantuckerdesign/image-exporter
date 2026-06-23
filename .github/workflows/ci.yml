@@ -1,8 +1,8 @@
 # Continuous Integration
 #
 # Runs on every pull request and on pushes to main, so no change reaches main
-# without compiling cleanly. Layer 1 of the CI/CD setup: typecheck + build.
-# (Tests and lint are added in later layers.)
+# without passing checks. CI gate: typecheck + test + build.
+# (Lint is added in a later layer.)
 name: CI
 
 on:
@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   verify:
-    name: Typecheck & build
+    name: Typecheck, test & build
     runs-on: ubuntu-latest
     steps:
       # The runner starts empty: first put our code on it.
@@ -40,6 +40,10 @@ jobs:
 
       - name: Typecheck
         run: bun run typecheck
+
+      # Runs both environments: test:dom (happy-dom) and test:node (no DOM).
+      - name: Test
+        run: bun run test
 
       - name: Build
         run: bun run build
