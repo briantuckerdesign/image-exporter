@@ -10,7 +10,7 @@ import * as modernScreenshot from "modern-screenshot";
 export async function captureElement(
   element: HTMLElement,
   imageOptions: ParsedImageOptions,
-  filenames: string[]
+  seen: Set<string>
 ): Promise<Image> {
   try {
     let dataURL = "";
@@ -61,7 +61,7 @@ export async function captureElement(
 
     return {
       dataURL,
-      fileName: handleFileNames(imageOptions, filenames),
+      fileName: handleFileNames(imageOptions, seen),
     };
   } catch (error) {
     console.error("ImageExporter: Error in captureImage", error);

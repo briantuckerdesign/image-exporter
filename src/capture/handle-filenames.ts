@@ -1,54 +1,19 @@
 import { ImageOptions, Label } from "../types";
+import { makeUnique } from "./make-unique";
 
 /**
- * Handles the generation of unique filenames based on a proposed filename and an array of existing filenames.
+ * handleFileNames
  *
- * If the proposed filename is unique, it is added to the filenames array and returned as-is.
- * If the proposed filename is not unique, the function will check if it already ends with a "-n" pattern.
- * If it does, the function will increment the number until a unique filename is found.
- * If it doesn't, the function will start with "-2" and increment the number until a unique filename is found.
+ * Builds the filename for an image from its options (label + optional scale +
+ * format extension), then ensures it is unique against `seen` via the shared
+ * `makeUnique` helper.
  */
-export function handleFileNames(imageOptions: ImageOptions, filenames: string[]): Label {
-  // Finish altering filenames before checking for uniqueness
+export function handleFileNames(imageOptions: ImageOptions, seen: Set<string>): Label {
   let proposedFilename = imageOptions.label;
   // Add scale to filename if includeScaleInLabel is true
   if (imageOptions.includeScaleInLabel) proposedFilename += `_@${imageOptions.scale}x`;
-  // Add format to filename last
-  const extension = `.${imageOptions.format}`;
-  proposedFilename += extension;
+  // Add format extension last
+  proposedFilename += `.${imageOptions.format}`;
 
-  // If filename is unique, add it to array and return as-is
-  if (!filenames.includes(proposedFilename)) {
-    filenames.push(proposedFilename);
-    return proposedFilename;
-  }
-
-  // Check if filename already ends with -n pattern
-  const numberPattern = /-(\d+)$/;
-  const match = proposedFilename.match(numberPattern);
-
-  if (match) {
-    // File ends with -n, increment the number until we find a unique name
-    const baseFilename = proposedFilename.replace(numberPattern, "");
-    let counter = parseInt(match[1], 10);
-
-    while (filenames.includes(`${baseFilename}-${counter}${extension}`)) {
-      counter++;
-    }
-
-    const newFilename = `${baseFilename}-${counter}${extension}`;
-    filenames.push(newFilename);
-    return newFilename;
-  } else {
-    // File doesn't end with -n, start with -2 and increment if needed
-    const baseFilename = proposedFilename.replace(extension, "");
-    let counter = 2;
-    while (filenames.includes(`${baseFilename}-${counter}${extension}`)) {
-      counter++;
-    }
-
-    const newFilename = `${baseFilename}-${counter}${extension}`;
-    filenames.push(newFilename);
-    return newFilename;
-  }
+  return makeUnique(proposedFilename, seen);
 }

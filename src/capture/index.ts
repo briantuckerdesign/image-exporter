@@ -47,7 +47,7 @@ export async function capture(
 
     /* --------------------------------- Capture -------------------------------- */
     let images: Image[] = [];
-    let filenames: string[] = [];
+    const seen = new Set<string>();
     let imageNumber = 1;
 
     for (const element of elements) {
@@ -65,7 +65,7 @@ export async function capture(
           const image = await captureElement(
             element,
             { ...imageOptions, scale: scale } as ParsedImageOptions,
-            filenames
+            seen
           );
 
           images.push(image);
@@ -78,7 +78,7 @@ export async function capture(
         const image = await captureElement(
           element,
           imageOptions as ParsedImageOptions,
-          filenames
+          seen
         );
 
         images.push(image);
