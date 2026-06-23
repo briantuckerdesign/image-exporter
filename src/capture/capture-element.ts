@@ -10,8 +10,11 @@ import * as modernScreenshot from "modern-screenshot";
 export async function captureElement(
   element: HTMLElement,
   imageOptions: ParsedImageOptions,
-  filenames: string[]
+  seen: Set<string>
 ): Promise<Image> {
+  // If element has no background and is a JPG, default to white background.
+  // Tracked outside the try so it can be restored in finally even on failure.
+  let cleanUpBackground = false;
   try {
     let dataURL = "";
     // Final settings for capturing images.
@@ -24,11 +27,9 @@ export async function captureElement(
       filter: filter,
     };
 
-    // If element has no background and is a JPG, default to white background
     const styles = getComputedStyle(element);
     const backgroundColor = styles.backgroundColor;
     const backgroundImage = styles.backgroundImage;
-    let cleanUpBackground = false;
     if (
       backgroundColor === "rgba(0, 0, 0, 0)" &&
       backgroundImage === "none" &&
@@ -54,18 +55,22 @@ export async function captureElement(
         break;
     }
 
+    return {
+      dataURL,
+      fileName: handleFileNames(imageOptions, seen),
+    };
+  } catch (error) {
+    // Do NOT swallow into an empty image — that produces a corrupt download.
+    // Rethrow with context so the caller can skip + log this element.
+    throw new Error(
+      `ImageExporter: failed to capture element as ${imageOptions.format}`,
+      { cause: error }
+    );
+  } finally {
     if (cleanUpBackground) {
       element.style.backgroundColor = "";
       element.style.backgroundImage = "";
     }
-
-    return {
-      dataURL,
-      fileName: handleFileNames(imageOptions, filenames),
-    };
-  } catch (error) {
-    console.error("ImageExporter: Error in captureImage", error);
-    return { dataURL: "", fileName: "" };
   }
 }
 

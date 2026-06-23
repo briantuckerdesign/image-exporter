@@ -1,6 +1,7 @@
 import { Config, Image, Label } from "../types";
 import JSZip from "jszip";
 import { defaultConfig } from "../config";
+import { makeUnique } from "./make-unique";
 
 /**
  * downloadImages
@@ -93,36 +94,14 @@ function parseLabel(config: Config): Label {
  * ensureUniqueFileNames
  *
  * Ensures all image filenames are unique by adding -2, -3, etc. to duplicates
- * before the file extension.
+ * before the file extension. Uses the shared `makeUnique` helper so this public
+ * entry point dedups identically to capture-time naming.
  */
-function ensureUniqueFileNames(images: Image[]): Image[] {
-  const fileNameMap = new Map<string, number>();
+export function ensureUniqueFileNames(images: Image[]): Image[] {
+  const seen = new Set<string>();
 
   return images.map((image) => {
-    const { fileName } = image;
-
-    // Split the filename into base and extension
-    const lastDotIndex = fileName.lastIndexOf(".");
-    const baseName = lastDotIndex !== -1 ? fileName.substring(0, lastDotIndex) : fileName;
-    const extension = lastDotIndex !== -1 ? fileName.substring(lastDotIndex) : "";
-
-    // Check if this base filename has been seen before
-    if (!fileNameMap.has(fileName)) {
-      fileNameMap.set(fileName, 1);
-      return image;
-    }
-
-    // If it's a duplicate, increment the counter and create a new filename
-    const count = fileNameMap.get(fileName)! + 1;
-    fileNameMap.set(fileName, count);
-
-    // Create new filename with -2, -3, etc. before the extension
-    const newFileName = `${baseName}-${count}${extension}`;
-
-    // Return a new image object with the updated filename
-    return {
-      ...image,
-      fileName: newFileName,
-    };
+    const fileName = makeUnique(image.fileName, seen);
+    return fileName === image.fileName ? image : { ...image, fileName };
   });
 }

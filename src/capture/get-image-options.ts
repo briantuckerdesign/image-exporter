@@ -94,7 +94,7 @@ export async function getImageOptions(
           `ImageExporter: provided format is not valid.
             Provided: ${format}
             Element: ${element}
-            Accepted values: jpg, png, svg, 
+            Accepted values: jpg, png, svg, webp
             Defaulting to: ${config.format}`
         );
       }
