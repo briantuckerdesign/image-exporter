@@ -12,7 +12,7 @@ import { log } from "../logger";
  */
 export async function runCorsProxy(
   config: Config,
-  elements: HTMLElement[] | NodeListOf<HTMLElement>
+  elements: HTMLElement[] | NodeListOf<HTMLElement>,
 ): Promise<void> {
   try {
     log.verbose("running CORS proxy");

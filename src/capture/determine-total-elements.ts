@@ -12,7 +12,7 @@ import { Config } from "../types";
  */
 export async function determineTotalElements(
   elements: HTMLElement[] | NodeListOf<HTMLElement>,
-  config: Config
+  config: Config,
 ): Promise<number> {
   try {
     let totalElements = 0;
@@ -20,7 +20,7 @@ export async function determineTotalElements(
       totalElements += countScalesForElement(element, config);
     }
     return totalElements;
-  } catch (error) {
+  } catch {
     return 1;
   }
 }

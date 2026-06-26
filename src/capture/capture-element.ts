@@ -10,21 +10,25 @@ import * as modernScreenshot from "modern-screenshot";
 export async function captureElement(
   element: HTMLElement,
   imageOptions: ParsedImageOptions,
-  seen: Set<string>
+  seen: Set<string>,
+  screenshotOptions?: Partial<modernScreenshot.Options>,
 ): Promise<Image> {
   // If element has no background and is a JPG, default to white background.
   // Tracked outside the try so it can be restored in finally even on failure.
   let cleanUpBackground = false;
   try {
     let dataURL = "";
-    // Final settings for capturing images.
-    let htmlToImageOptions: modernScreenshot.Options = {
+    // Final settings for capturing images. User-provided screenshotOptions are
+    // applied first; our managed values (scale/quality/filter) take precedence.
+    const userFilter = screenshotOptions?.filter;
+    const htmlToImageOptions: modernScreenshot.Options = {
+      ...screenshotOptions,
       // Ensure quality is a number
       quality: imageOptions.quality,
       // Ensure scale is a number
       scale: imageOptions.scale,
-      // Ignores elements with data-ignore-capture attribute
-      filter: filter,
+      // Ignore data-ignore-capture elements, AND honour any user filter.
+      filter: (node) => filter(node) && (userFilter ? userFilter(node) : true),
     };
 
     const styles = getComputedStyle(element);
@@ -64,7 +68,7 @@ export async function captureElement(
     // Rethrow with context so the caller can skip + log this element.
     throw new Error(
       `ImageExporter: failed to capture element as ${imageOptions.format}`,
-      { cause: error }
+      { cause: error },
     );
   } finally {
     if (cleanUpBackground) {

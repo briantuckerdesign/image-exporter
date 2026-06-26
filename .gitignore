@@ -3,5 +3,7 @@
 .DS_Store
 /html-tests
 *.lock
+# Keep Bun's lockfile committed for reproducible installs (CI uses --frozen-lockfile)
+!bun.lock
 package-lock.json
 /dist

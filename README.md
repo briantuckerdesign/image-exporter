@@ -68,8 +68,11 @@ Captures images from HTML elements.
 
 ```typescript
 interface Image {
+  /** base64 data URL. Empty when `output` is `"blob"`. */
   dataURL: string;
   fileName: string;
+  /** Populated when `config.output` is `"blob"` or `"both"`. */
+  blob?: Blob;
 }
 ```
 
@@ -86,6 +89,19 @@ await downloadImages(images);
 ```
 
 In the browser, this is available as `window.imageExporterDownload`.
+
+### `copyImageToClipboard(image)`
+
+Copies a single captured image to the system clipboard. Must be called from a user gesture (e.g. a click). Use `format: "png"` for the best browser compatibility.
+
+```typescript
+import { capture, copyImageToClipboard } from "image-exporter";
+
+const images = await capture(element, { downloadImages: false, format: "png" });
+await copyImageToClipboard(images[0]);
+```
+
+In the browser, this is available as `window.imageExporterCopyToClipboard`.
 
 ## Config
 
@@ -105,6 +121,15 @@ interface Config {
   enableWindowLogging: boolean;
   /** Logging level for debugging. Default: "none" */
   loggingLevel: "none" | "info" | "error" | "verbose";
+
+  /** Called after each capture with (completed, total). */
+  onProgress?: (completed: number, total: number) => void;
+  /** Cancel an in-progress capture; returns the images captured so far. */
+  signal?: AbortSignal;
+  /** Extra options forwarded to modern-screenshot (fonts, width/height, pixelRatio, etc.). */
+  screenshotOptions?: Partial<import("modern-screenshot").Options>;
+  /** What the returned images carry. Default: "dataurl" */
+  output?: "dataurl" | "blob" | "both";
 
   // Default image options (can be overridden per-element)
   /** Default: "image" */

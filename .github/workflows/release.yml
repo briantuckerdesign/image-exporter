@@ -1,37 +1,65 @@
+# Release (Continuous Delivery)
+#
+# Driven by Changesets. Flow:
+#   1. PRs add a changeset file (.changeset/*.md) describing the change + bump.
+#   2. On push to main, this workflow runs the Changesets action:
+#        - if unreleased changesets exist, it opens/updates a
+#          "Version Packages" PR that bumps the version + writes the CHANGELOG.
+#        - when that PR is merged, this workflow runs again, sees the version
+#          bump, and publishes to npm + tags the release.
+#
+# Auth: npm Trusted Publishing (OIDC) — no NPM_TOKEN. Requires the package's
+# trusted publisher to be configured on npmjs.com (workflow file: release.yml),
+# plus npm >= 11.5.1 and Node >= 22.14 (set up below). Provenance is attached
+# automatically with trusted publishing.
 name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+
+# Don't run two releases at once.
+concurrency: release-${{ github.ref }}
 
 permissions:
-  contents: write
+  contents: write # push the version commit/tag and create the GitHub release
+  pull-requests: write # open/update the "Version Packages" PR
+  id-token: write # OIDC token for npm provenance
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Bun
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Install dependencies
-        run: bun install
-
-      - name: Build
-        run: bun run build
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      # Node + a recent npm are required for OIDC trusted publishing
+      # (npm >= 11.5.1, Node >= 22.14). `changeset publish` shells out to npm.
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          files: |
-            dist/index.js
-            dist/index.cjs
-            dist/index.browser.js
-          generate_release_notes: true
+          node-version: "22"
+
+      - name: Upgrade npm to a trusted-publishing-capable version
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Create release PR or publish to npm
+        uses: changesets/action@v1
+        with:
+          # `version` updates package.json + CHANGELOG from changesets.
+          version: bunx changeset version
+          # `publish` runs only when there are version bumps to release.
+          # `release` builds first, then publishes via npm (OIDC, no token).
+          publish: bun run release
+          commit: "chore: version packages"
+          title: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -22,7 +22,7 @@ import {
  */
 export async function getImageOptions(
   element: HTMLElement,
-  config: Config
+  config: Config,
 ): Promise<ImageOptions> {
   return {
     label: parseLabel(),
@@ -95,7 +95,7 @@ export async function getImageOptions(
             Provided: ${format}
             Element: ${element}
             Accepted values: jpg, png, svg, webp
-            Defaulting to: ${config.format}`
+            Defaulting to: ${config.format}`,
         );
       }
     } catch (error) {
@@ -125,7 +125,7 @@ export async function getImageOptions(
             Provided: ${scaleAsString}
             Element: ${element}
             Accepted values: number or csv numbers e.g. (1,2)
-            Defaulting to ${config.scale}`
+            Defaulting to ${config.scale}`,
           );
         }
         return scales;
@@ -137,7 +137,7 @@ export async function getImageOptions(
             Provided: ${scaleAsString}
             Element: ${element}
             Accepted values: number or csv numbers e.g. (1,2)
-            Defaulting to: ${config.scale}`
+            Defaulting to: ${config.scale}`,
           );
         }
         return scaleAsNumber;
@@ -165,7 +165,7 @@ export async function getImageOptions(
             Provided: ${qualityAsString}
             Element: ${element}
             Accepted values: number
-            Defaulting to: ${config.quality}`
+            Defaulting to: ${config.quality}`,
         );
       }
       return qualityAsNumber;
@@ -196,7 +196,7 @@ export async function getImageOptions(
             Provided: ${includeScaleInLabel}
             Element: ${element}
             Accepted values: true or false
-            Defaulting to: ${config.includeScaleInLabel}`
+            Defaulting to: ${config.includeScaleInLabel}`,
         );
       }
     } catch (error) {

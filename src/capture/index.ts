@@ -1,7 +1,8 @@
 import { captureElement } from "./capture-element";
 import { downloadImages } from "./download-images";
 import { corsProxy } from "../cors-proxy";
-import { Config, Image, ParsedImageOptions } from "../types";
+import { Config, Image, Output, ParsedImageOptions } from "../types";
+import { dataUrlToBlob } from "./data-url-to-blob";
 import { getImageOptions } from "./get-image-options";
 import { defaultConfig } from "../config";
 import { removeHiddenElements } from "./remove-hidden-elements";
@@ -18,7 +19,7 @@ export let loggingLevel = "none";
  */
 export async function capture(
   elements: HTMLElement[] | NodeListOf<HTMLElement> | HTMLElement,
-  userConfig: Partial<Config> = defaultConfig
+  userConfig: Partial<Config> = defaultConfig,
 ): Promise<Image[] | null> {
   log.group.open("image-exporter");
   try {
@@ -38,7 +39,7 @@ export async function capture(
     if (originalLength !== elements.length)
       log.verbose(
         "Skipping capture of hidden elements: ",
-        originalLength - elements.length
+        originalLength - elements.length,
       );
     log.verbose("Element to capture", elements.length);
 
@@ -46,7 +47,7 @@ export async function capture(
     if (userConfig.corsProxyBaseUrl) await corsProxy.run(config, elements);
 
     /* --------------------------------- Capture -------------------------------- */
-    let images: Image[] = [];
+    const images: Image[] = [];
     const seen = new Set<string>();
     let imageNumber = 1;
 
@@ -57,17 +58,27 @@ export async function capture(
      */
     const tryCapture = async (
       element: HTMLElement,
-      options: ParsedImageOptions
+      options: ParsedImageOptions,
     ): Promise<void> => {
-      log.progress(imageNumber++, totalElements);
       try {
-        images.push(await captureElement(element, options, seen));
+        const image = await captureElement(
+          element,
+          options,
+          seen,
+          config.screenshotOptions,
+        );
+        images.push(applyOutput(image, config.output));
       } catch (error) {
         log.error(error);
+      } finally {
+        const completed = imageNumber++;
+        log.progress(completed, totalElements);
+        config.onProgress?.(completed, totalElements);
       }
     };
 
-    for (const element of elements) {
+    captureLoop: for (const element of elements) {
+      if (config.signal?.aborted) break;
       const imageOptions = await getImageOptions(element, config);
       log.verbose("Image options", imageOptions);
 
@@ -78,6 +89,7 @@ export async function capture(
         imageOptions.includeScaleInLabel = true;
 
         for (const scale of imageOptions.scale) {
+          if (config.signal?.aborted) break captureLoop;
           await tryCapture(element, {
             ...imageOptions,
             scale,
@@ -89,6 +101,13 @@ export async function capture(
 
         await tryCapture(element, imageOptions as ParsedImageOptions);
       }
+    }
+
+    /* -------------------------------- Aborted? -------------------------------- */
+    // Return whatever was captured so far; skip downloading a partial result.
+    if (config.signal?.aborted) {
+      log.verbose("Capture aborted; returning", images.length, "image(s)");
+      return images;
     }
 
     /* -------------------------------- Download -------------------------------- */
@@ -106,4 +125,15 @@ export async function capture(
     if (userConfig.corsProxyBaseUrl) await corsProxy.cleanUp();
     log.group.close();
   }
+}
+
+/**
+ * Shapes a captured image per the configured output mode. `"blob"` drops the
+ * base64 dataURL to save memory (download still works via the Blob).
+ */
+function applyOutput(image: Image, output: Output | undefined): Image {
+  if (!output || output === "dataurl") return image;
+  const blob = dataUrlToBlob(image.dataURL);
+  if (output === "blob") return { ...image, dataURL: "", blob };
+  return { ...image, blob }; // "both"
 }

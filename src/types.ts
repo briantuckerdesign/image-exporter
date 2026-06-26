@@ -1,3 +1,5 @@
+import type { Options as ModernScreenshotOptions } from "modern-screenshot";
+
 export interface ImageOptions {
   /** Label for image. Does not include file extension or scale. */
   label: Label;
@@ -31,6 +33,33 @@ export interface Config extends ImageOptions {
   enableWindowLogging: boolean;
   /** Enable verbose logging for debugging. */
   loggingLevel: LoggingLevel;
+  /**
+   * Called after each capture completes, with the number completed so far and
+   * the total number of captures. A package-friendly alternative to polling
+   * `window.imageExporterProgress`.
+   */
+  onProgress?: (completed: number, total: number) => void;
+  /**
+   * Abort an in-progress capture. When the signal fires, the loop stops and
+   * the images captured so far are returned (download is skipped).
+   */
+  signal?: AbortSignal;
+  /**
+   * Extra options passed through to modern-screenshot (fonts, width/height,
+   * pixelRatio, backgroundColor, etc.). `scale` and `quality` remain controlled
+   * by the per-image options; a `filter` here is combined with the built-in
+   * `data-ignore-capture` filter (both must pass).
+   */
+  screenshotOptions?: Partial<ModernScreenshotOptions>;
+  /**
+   * What the returned images carry:
+   * - `"dataurl"` (default): `dataURL` only
+   * - `"blob"`: `blob` only (no base64 retained — lighter on memory)
+   * - `"both"`: `dataURL` and `blob`
+   *
+   * Downloading works in every mode.
+   */
+  output?: Output;
 }
 
 export interface ParsedImageOptions extends ImageOptions {
@@ -39,9 +68,15 @@ export interface ParsedImageOptions extends ImageOptions {
 }
 
 export interface Image {
+  /** base64 data URL. Empty when `output` is `"blob"`. */
   dataURL: string;
   fileName: string;
+  /** Populated when `config.output` is `"blob"` or `"both"`. */
+  blob?: Blob;
 }
+
+/** What the returned Image carries. Default `"dataurl"`. */
+export type Output = "dataurl" | "blob" | "both";
 
 export type Label = string;
 export type Format = "jpg" | "png" | "svg" | "webp";

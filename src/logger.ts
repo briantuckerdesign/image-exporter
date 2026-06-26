@@ -4,17 +4,17 @@ import { windowLogging, loggingLevel } from "./capture";
 const hasWindow = typeof window !== "undefined";
 
 export const log = {
-  info: (...messages: any[]) => logAction(messages, "info"),
-  error: (...messages: any[]) => logAction(messages, "error"),
-  verbose: (...messages: any[]) => logAction(messages, "verbose"),
+  info: (...messages: unknown[]) => logAction(messages, "info"),
+  error: (...messages: unknown[]) => logAction(messages, "error"),
+  verbose: (...messages: unknown[]) => logAction(messages, "verbose"),
   progress: (progress: number, total: number) => logProgress(progress, total),
   group: {
-    open: (...messages: any[]) => logAction(messages, "group"),
-    close: (...messages: any[]) => logAction(messages, "groupEnd"),
+    open: (...messages: unknown[]) => logAction(messages, "group"),
+    close: (...messages: unknown[]) => logAction(messages, "groupEnd"),
   },
 };
 
-async function logAction(messages: any[], type: LogType = "info") {
+async function logAction(messages: unknown[], type: LogType = "info") {
   const combinedMessage = messages
     .map((msg) => (typeof msg === "object" ? JSON.stringify(msg) : msg))
     .join(" ");

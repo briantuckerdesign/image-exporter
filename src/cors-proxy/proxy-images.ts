@@ -10,7 +10,7 @@ import { log } from "../logger";
  */
 export async function proxyImages(
   config: Config,
-  elements: HTMLElement[] | NodeListOf<HTMLElement>
+  elements: HTMLElement[] | NodeListOf<HTMLElement>,
 ) {
   try {
     const elementArray = Array.from(elements);
