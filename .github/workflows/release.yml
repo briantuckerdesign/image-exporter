@@ -55,7 +55,10 @@ jobs:
         uses: changesets/action@v1
         with:
           # `version` updates package.json + CHANGELOG from changesets.
-          version: bunx changeset version
+          # Run under Node (npx), not Bun: the GitHub-linked changelog generator
+          # fetches api.github.com/graphql, and Bun's fetch flakes with
+          # "Premature close" against it.
+          version: npx changeset version
           # `publish` runs only when there are version bumps to release.
           # `release` builds first, then publishes via npm (OIDC, no token).
           publish: bun run release
