@@ -80,6 +80,36 @@ test("passes screenshotOptions through but keeps scale/quality managed", async (
   expect(lastOptions?.quality).toBe(1); // managed value wins
 });
 
+// Measured size of a 970x90 element at devicePixelRatio 1.14 (from a bug report).
+const withRect = (width: number, height: number) => {
+  const el = document.createElement("div");
+  el.getBoundingClientRect = () => ({ width, height }) as DOMRect;
+  return el;
+};
+
+test("rounds a fractional element size instead of letting it floor a pixel short", async () => {
+  await captureElement(withRect(969.9972534, 89.9945145), opts("jpg"), new Set());
+
+  expect(lastOptions?.width).toBe(970);
+  expect(lastOptions?.height).toBe(90);
+});
+
+test("leaves a genuinely fractional size alone so the clone doesn't rewrap", async () => {
+  await captureElement(withRect(200.4, 32.6), opts("png"), new Set());
+
+  expect(lastOptions?.width).toBe(200.4);
+  expect(lastOptions?.height).toBe(32.6);
+});
+
+test("user-provided width/height win over the measured size", async () => {
+  await captureElement(withRect(969.9972534, 89.9945145), opts("png"), new Set(), {
+    width: 300,
+  });
+
+  expect(lastOptions?.width).toBe(300); // user value
+  expect(lastOptions?.height).toBe(90); // still rounded from the element
+});
+
 test("combines a user filter with the data-ignore-capture filter", async () => {
   const el = document.createElement("div");
   await captureElement(el, opts("png"), new Set(), {

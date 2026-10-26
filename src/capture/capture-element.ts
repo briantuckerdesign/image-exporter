@@ -21,7 +21,14 @@ export async function captureElement(
     // Final settings for capturing images. User-provided screenshotOptions are
     // applied first; our managed values (scale/quality/filter) take precedence.
     const userFilter = screenshotOptions?.filter;
+    // Left to measure, modern-screenshot floors getBoundingClientRect() into the
+    // canvas size. At a non-integer devicePixelRatio a 970px element measures
+    // 969.997, so the image comes out a pixel short. Snap that noise ourselves;
+    // a user-provided width/height still wins, and 0 lets modern-screenshot measure.
+    const rect = element.getBoundingClientRect();
     const htmlToImageOptions: modernScreenshot.Options = {
+      width: snapToInteger(rect.width),
+      height: snapToInteger(rect.height),
       ...screenshotOptions,
       // Ensure quality is a number
       quality: imageOptions.quality,
@@ -77,6 +84,14 @@ export async function captureElement(
     }
   }
 }
+
+// modern-screenshot also forces width/height onto the cloned root, so only snap
+// sub-pixel measurement noise. A genuinely fractional size (a shrink-to-fit
+// 200.4px button) stays as measured; rounding it down would rewrap its text.
+const snapToInteger = (n: number) => {
+  const rounded = Math.round(n);
+  return Math.abs(n - rounded) < 0.01 ? rounded : n;
+};
 
 const filter = (node: Node) => {
   // Check if the node is an HTMLElement
