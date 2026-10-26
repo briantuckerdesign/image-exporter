@@ -59,7 +59,7 @@
     "provenance": true
   },
   "dependencies": {
-    "jszip": "^3.10.1",
+    "client-zip": "^2.5.1",
     "modern-screenshot": "^4.6.0"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import { Config, Image, Label } from "../types";
-import JSZip from "jszip";
+import { downloadZip } from "client-zip";
 import { defaultConfig } from "../config";
+import { dataUrlToBlob } from "./data-url-to-blob";
 import { makeUnique } from "./make-unique";
 
 /**
@@ -48,28 +49,27 @@ function triggerDownload(data: string | Blob, fileName: string): void {
  *
  * Zips up the images and returns the zip file as a Blob.
  */
-async function zipUpImages(images: Image[]): Promise<Blob | undefined> {
-  const zip = new JSZip();
+export async function zipUpImages(images: Image[]): Promise<Blob | undefined> {
+  let files: { name: string; input: Blob }[];
 
   try {
-    // Loop through each image and add to the zip, preferring the Blob if present.
-    images.forEach((image) => {
-      if (image.blob) {
-        zip.file(image.fileName, image.blob);
-      } else {
-        const content = image.dataURL.split(",")[1]; // assumes base64 encoding
-        zip.file(image.fileName, content, { base64: true });
-      }
-    });
+    // Prefer the Blob if present. dataUrlToBlob decodes with atob rather than
+    // fetch(dataURL), which a host page CSP can block, and also handles
+    // URL-encoded (non-base64) SVG data URLs.
+    files = images.map((image) => ({
+      name: image.fileName,
+      input: image.blob ?? dataUrlToBlob(image.dataURL),
+    }));
   } catch (error) {
     console.error("Image Exporter - Error adding images to ZIP:", error);
     return;
   }
 
   try {
-    // Generate the ZIP file
-    const imagesBlob = await zip.generateAsync({ type: "blob" });
-    return imagesBlob;
+    // Generate the ZIP file. Not every runtime types a Response's Blob from its
+    // Content-Type header, so set it explicitly.
+    const zip = await downloadZip(files).blob();
+    return new Blob([zip], { type: "application/zip" });
   } catch (error) {
     console.error("Image Exporter - Error generating ZIP:", error);
     return;
