@@ -1,5 +1,11 @@
 # image-exporter
 
+## 1.3.2
+
+### Patch Changes
+
+- [#19](https://github.com/briantuckerdesign/image-exporter/pull/19) [`4d3bc00`](https://github.com/briantuckerdesign/image-exporter/commit/4d3bc002b561f5ccd92f9b0bc07c763d8840ab6d) Thanks [@briantuckerdesign](https://github.com/briantuckerdesign)! - Replace `jszip` with `client-zip` for multi-image ZIP downloads. Newer Bun builds resolved jszip to its prebuilt UMD browser file, which broke when re-bundled by downstream packages; client-zip is a small ESM-native package with no such wrapper. Images in a ZIP are still stored uncompressed, as before. URL-encoded (non-base64) data URLs, such as SVG captures, are now decoded correctly instead of being treated as base64.
+
 ## 1.3.1
 
 ### Patch Changes
