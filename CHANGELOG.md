@@ -1,5 +1,11 @@
 # image-exporter
 
+## 1.3.1
+
+### Patch Changes
+
+- [`884d9e7`](https://github.com/briantuckerdesign/image-exporter/commit/884d9e7e19b6b29fa5505a27220c065ab5840b31) Thanks [@briantuckerdesign](https://github.com/briantuckerdesign)! - Round the measured element size before capture. At a non-integer `devicePixelRatio` (Windows display scaling, browser zoom) a 970px element measures 969.997px and modern-screenshot floored it, producing images one pixel short in each dimension. A `width`/`height` passed via `screenshotOptions` still takes precedence.
+
 ## 1.3.0
 
 ### Minor Changes
